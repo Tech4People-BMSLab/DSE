@@ -1,0 +1,26 @@
+{
+	"folders": [
+        {
+            "path": "api"
+        },
+        {
+            "path": "ext"
+        },
+        {
+            "path": "exp"
+        },
+        {
+            "path": "docker"
+        },
+        {
+            "path": "script"
+        },
+        {
+            "path": "docs"
+        },
+        
+    ],
+	"settings": {
+        "files.autoSave": "off",
+    },
+}

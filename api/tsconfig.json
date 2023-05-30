@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "allowJs": true,
+    "sourceMap": true,
+    "target": "ES6",
+    "strict": true,
+    "module": "ES6",
+    "rootDir": "src",
+    "types": [
+      "node",
+      "jest"
+    ],
+    "lib": [
+      "es6"
+    ],
+    "outDir": "build",
+    "moduleResolution": "node",
+    "esModuleInterop": true
+  },
+  "exclude": [
+    "src/**/*.spec.ts"
+  ],
+  "include": [
+    "src/**/*"
+  ]
+}

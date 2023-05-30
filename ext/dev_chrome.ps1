@@ -1,0 +1,1 @@
+pnpm run app:chrome-dev
