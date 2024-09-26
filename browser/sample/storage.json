@@ -1,0 +1,130 @@
+{
+    "browser": {
+        "name": "Chrome",
+        "os": "Windows",
+        "os_version": "NT 10.0",
+        "version": "127.0.0.0"
+    },
+    "crawler.active": false,
+    "environment": "dev",
+    "extension.popup_timestamp": "2024-04-16T08:08:54.547-04:00",
+    "extension.state": "active",
+    "extension.version": "1.0.166",
+    "language": "en-US",
+    "user.form": {
+        "age": "25-34",
+        "browser": {
+            "brave": true,
+            "chrome": true,
+            "firefox": true,
+            "microsoft-edge": true,
+            "opera": true,
+            "safari": true,
+            "unselected": true
+        },
+        "education": "hoger-beroeps-onderwijs",
+        "employment": "unselected",
+        "income": "unselected",
+        "language": {
+            "duits": true,
+            "engels": true,
+            "frans": true,
+            "italiaans": true,
+            "nederlands": true,
+            "spaans": true,
+            "unselected": true
+        },
+        "political": "unselected",
+        "postcode": {
+            "value": "9999"
+        },
+        "resident": "nee",
+        "search_engine": {
+            "anders": true,
+            "bing": true,
+            "duckduckgo": true,
+            "ecosia": true,
+            "google": true,
+            "startpage": true,
+            "unselected": true,
+            "yahoo": true
+        },
+        "sex": "mannelijk",
+        "social": {
+            "anders": true,
+            "de-krant": true,
+            "facebook": true,
+            "instagram": true,
+            "linkedin": true,
+            "nieuwswebsites": true,
+            "radio": true,
+            "reddit": true,
+            "telegram": true,
+            "tv": true,
+            "twitter": true,
+            "unselected": true,
+            "whatsapp": true,
+            "youtube": true
+        }
+    },
+    "user.form_backup": {
+        "age": "25-34",
+        "browser": {
+            "brave": true,
+            "chrome": true,
+            "firefox": true,
+            "microsoft-edge": true,
+            "opera": true,
+            "safari": true,
+            "unselected": true
+        },
+        "education": "hoger-beroeps-onderwijs",
+        "employment": "unselected",
+        "income": "unselected",
+        "language": {
+            "duits": true,
+            "engels": true,
+            "frans": true,
+            "italiaans": true,
+            "nederlands": true,
+            "spaans": true,
+            "unselected": true
+        },
+        "political": "unselected",
+        "postcode": {
+            "value": "9999"
+        },
+        "resident": "nee",
+        "search_engine": {
+            "anders": true,
+            "bing": true,
+            "duckduckgo": true,
+            "ecosia": true,
+            "google": true,
+            "startpage": true,
+            "unselected": true,
+            "yahoo": true
+        },
+        "sex": "mannelijk",
+        "social": {
+            "anders": true,
+            "de-krant": true,
+            "facebook": true,
+            "instagram": true,
+            "linkedin": true,
+            "nieuwswebsites": true,
+            "radio": true,
+            "reddit": true,
+            "telegram": true,
+            "tv": true,
+            "twitter": true,
+            "unselected": true,
+            "whatsapp": true,
+            "youtube": true
+        }
+    },
+    "user.token": "09f1adbb1340",
+    "user.update": "2024-07-29T19:46:22.908Z",
+    "window_manager.tabs": [],
+    "window_manager.windows": []
+}

@@ -1,0 +1,31 @@
+{
+    "name": "web",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite --host localhost --port 3000",
+        "build": "vite build --emptyOutDir --outDir ../api/public",
+        "preview": "vite preview"
+    },
+    "devDependencies": {
+        "@sveltejs/vite-plugin-svelte": "^3.1.1",
+        "@tsconfig/svelte": "^5.0.4",
+        "@types/localforage": "^0.0.34",
+        "@types/lodash": "^4.17.7",
+        "@types/luxon": "^3.4.2",
+        "@types/node": "^20.14.9",
+        "svelte": "^4.2.18",
+        "vite": "^5.3.1"
+    },
+    "dependencies": {
+        "@floating-ui/dom": "^1.6.7",
+        "axios": "^1.7.2",
+        "localforage": "^1.10.0",
+        "lodash": "^4.17.21",
+        "luxon": "^3.4.4",
+        "nats.ws": "^1.29.0",
+        "sass": "^1.77.6",
+        "svelte-routing": "^2.13.0"
+    }
+}

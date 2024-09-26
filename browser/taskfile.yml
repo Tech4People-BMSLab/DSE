@@ -1,0 +1,19 @@
+version: "3"
+
+tasks:
+  start:
+    cmds:
+      - bun run gulp dev-remote
+
+  start-local:
+    cmds:
+      - bun run gulp dev-local
+
+  start-demo:
+    cmds:
+      - bun run gulp dev-demo
+
+  build:
+    cmds:
+      - bun run gulp build
+

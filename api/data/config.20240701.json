@@ -1,0 +1,30 @@
+{
+    "keywords": [
+		"Woningnood",
+		"Asielzoekers",
+		"Coalitie",
+		"AI act",
+		"Politiek",
+		"Energietransitie",
+		"Voetbal",
+		"Landbouw",
+		"Oorlog",
+		"Opvanglocatie",
+		"Asielzoekerscentrum",
+		"Stikstof",
+		"Vandaag inside",
+		"Vluchtelingenopvang",
+		"Groene energie",
+		"Asielquotum",
+		"Ter Apel",
+		"Immigratie",
+		"Verkiezingen",
+		"Europees parlement",
+		"Verkiezingen Europa"
+    ],
+	"websites": [
+		{"name": "Google"       , "query": "q"           ,"url": "https://www.google.com/search"},
+		{"name": "DuckDuckGo"   , "query": "q"           ,"url": "https://duckduckgo.com/"},
+		{"name": "Bing"         , "query": "q"           ,"url": "https://www.bing.com/search"}
+	]
+}

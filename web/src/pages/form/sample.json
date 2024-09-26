@@ -1,0 +1,56 @@
+{
+    "age": "25-34",
+    "sex": "mannelijk",
+    "income": "20001-30000",
+    "social": {
+        "tv": false,
+        "radio": false,
+        "anders": false,
+        "reddit": false,
+        "twitter": false,
+        "youtube": false,
+        "de-krant": true,
+        "facebook": false,
+        "linkedin": false,
+        "telegram": false,
+        "whatsapp": false,
+        "instagram": false,
+        "unselected": false,
+        "nieuwswebsites": false
+    },
+    "browser": {
+        "brave": false,
+        "opera": false,
+        "chrome": true,
+        "safari": false,
+        "firefox": false,
+        "unselected": false,
+        "microsoft-edge": false
+    },
+    "language": {
+        "duits": false,
+        "frans": false,
+        "engels": true,
+        "spaans": false,
+        "italiaans": false,
+        "nederlands": false,
+        "unselected": false
+    },
+    "postcode": {
+        "value": "8888"
+    },
+    "resident": "ja",
+    "education": "hoger-beroeps-onderwijs",
+    "political": "pvv",
+    "employment": "parttime-dienstverband",
+    "search_engine": {
+        "bing": false,
+        "yahoo": false,
+        "anders": false,
+        "ecosia": false,
+        "google": true,
+        "startpage": false,
+        "duckduckgo": false,
+        "unselected": false
+    }
+}

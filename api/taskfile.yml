@@ -1,0 +1,10 @@
+version: '3'
+
+tasks:
+  start:
+    cmds:
+      - nodemon --watch src --ext go --exec go run src\\main.go
+
+  deploy:
+    cmds:
+      - PowerShell -File deploy.ps1
