@@ -1,19 +1,17 @@
 {
 	"folders": [
         {
+            "name": "workspace",
+            "path": "."
+        },
+        {
             "path": "api"
         },
         {
-            "path": "ext"
+            "path": "browser"
         },
         {
-            "path": "exp"
-        },
-        {
-            "path": "docker"
-        },
-        {
-            "path": "script"
+            "path": "web"
         },
         {
             "path": "docs"
