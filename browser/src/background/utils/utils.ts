@@ -14,6 +14,29 @@ import cryptoRandomString from 'crypto-random-string'
 export const is_empty  = _.isEmpty
 export const not_empty = _.negate(is_empty)
 
+export const once       = _.once
+export const every      = _.every
+
+export const has        = _.has
+export const get        = _.get
+export const set        = _.set
+export const unset      = _.unset
+
+export const map        = _.map
+export const each       = _.each
+export const keys       = _.keys
+export const find       = _.find
+export const filter     = _.filter
+export const sort_by    = _.sortBy
+export const find_index = _.findIndex
+
+export const pick       = _.pick
+export const default_to = _.defaultTo
+
+export const trim       = _.trim
+export const is_array   = _.isArray
+
+export const debounce   = _.debounce
 // ------------------------------------------------------------
 // : Utils
 // ------------------------------------------------------------

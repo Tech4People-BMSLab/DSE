@@ -1,0 +1,34 @@
+{
+    "keywords": [
+		"Immigratie",
+		"Ter Apel",
+		"Asielquotum",
+		"Asielzoekers",
+		"Asielzoekerscentrum",
+		"Opvanglocatie",
+		"Songfestival ",
+		"Voetbal ",
+		"Vandaag inside",
+		"AI act",
+		"Vluchtelingenopvang",
+		"Verkiezingen",
+		"Coalitie",
+		"Oorlog",
+		"Eerste Kamer",
+		"Politiek",
+		"Energietransitie",
+		"Groene energie",
+		"Stikstof",
+		"Landbouw",
+		"Woningnood"
+
+    ],
+	"websites": [
+		{"name": "Google"       , "query": "q"           ,"url": "https://www.google.com/search"},
+		{"name": "Google News"  , "query": "q"           ,"url": "https://www.google.com/search?tbm=nws"},
+		{"name": "Google Videos", "query": "q"           ,"url": "https://www.google.com/search?tbm=vid"},
+		{"name": "DuckDuckGo"   , "query": "q"           ,"url": "https://duckduckgo.com/"},
+		{"name": "Bing"         , "query": "q"           ,"url": "https://www.bing.com/search"},
+		{"name": "Yahoo"        , "query": "p"           ,"url": "https://search.yahoo.com/search"}
+	]
+}

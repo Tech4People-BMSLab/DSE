@@ -6,30 +6,51 @@ import (
 
 // GateKeeper controls access to a resource or section of code among multiple goroutines.
 type GateKeeper struct {
-	mutex          sync.Mutex
-	cond           *sync.Cond
-	counter        int
-	is_open        bool
+	counter int64
+	open    bool
+	mutex   sync.Mutex
+	cond    *sync.Cond
 }
 
 // NewGateKeeper initializes a new GateKeeper. If `locked` is true, the gate starts in a locked state.
 func NewGateKeeper(locked bool) *GateKeeper {
-	gk := &GateKeeper{is_open: !locked}
+	gk := &GateKeeper{}
 	gk.cond = sync.NewCond(&gk.mutex)
+
+	if locked {
+		gk.Lock()
+	} else {
+		gk.Unlock()
+	}
+
 	return gk
+}
+
+// IsLocked checks if the gate is in a locked state.
+func (gk *GateKeeper) IsLocked() bool {
+	gk.mutex.Lock()
+	defer gk.mutex.Unlock()
+	return !gk.open
+}
+
+// IsUnlocked checks if the gate is in an open state.
+func (gk *GateKeeper) IsUnlocked() bool {
+	gk.mutex.Lock()
+	defer gk.mutex.Unlock()
+	return gk.open
 }
 
 // Lock sets the gate to a locked state, preventing goroutines from passing until it is unlocked.
 func (gk *GateKeeper) Lock() {
 	gk.mutex.Lock()
-	gk.is_open = false
+	gk.open = false
 	gk.mutex.Unlock()
 }
 
 // Unlock sets the gate to an open state, allowing all waiting goroutines to proceed.
 func (gk *GateKeeper) Unlock() {
 	gk.mutex.Lock()
-	gk.is_open = true
+	gk.open = true
 	gk.cond.Broadcast()
 	gk.mutex.Unlock()
 }
@@ -38,26 +59,19 @@ func (gk *GateKeeper) Unlock() {
 // It prioritizes one goroutine if multiple are waiting.
 func (gk *GateKeeper) UnlockOne() {
 	gk.mutex.Lock()
-	defer gk.mutex.Unlock()
-	if gk.counter > 0 {
-		gk.counter--
-		gk.cond.Signal()
-	} else {
-		gk.is_open = true
-		gk.cond.Broadcast()
-	}
+	gk.counter++
+	gk.cond.Signal()
+	gk.mutex.Unlock()
 }
 
 // AllowIf lets a goroutine pass through the gate only if a specific condition is true.
 // The condition is defined by the predicate function provided as an argument.
 // If the gate is open, the predicate is ignored and the goroutine is allowed to proceed.
 func (gk *GateKeeper) AllowIf(predicate func() bool) {
-	gk.mutex.Lock()
-	defer gk.mutex.Unlock()
-
-	for !gk.is_open && !predicate() {
-		gk.cond.Wait()
+	if predicate() {
+		return
 	}
+	gk.Wait()
 }
 
 // Wait blocks the calling goroutine until the gate is fully opened.
@@ -65,7 +79,11 @@ func (gk *GateKeeper) AllowIf(predicate func() bool) {
 func (gk *GateKeeper) Wait() {
 	gk.mutex.Lock()
 	defer gk.mutex.Unlock()
-	for !gk.is_open {
+	for !gk.open {
 		gk.cond.Wait()
+		if gk.counter > 0 {
+			gk.counter--
+			break
+		}
 	}
 }

@@ -12,10 +12,13 @@
     // ------------------------------------------------------------
     // : Init
     // ------------------------------------------------------------
-    const base_path = import.meta.env.BASE_URL || '';
+    const base_path = import.meta.env.BASE_URL || ''
     
+    let raw : any
+    let form: any
     let data: any
     let animate = false
+
 
     function convert(questions: { [key: string]: any }): any {
         const result: any = {
@@ -71,8 +74,10 @@
     onMount(async () => {
         animate = true
 
-        data = await storage.get('form')
-        data = convert(data.questions)
+        raw  = await storage.get('form')
+        form = convert(raw.questions)
+
+        data = {form, raw}
         data = JSON.stringify(data, null, 0)
     })
 
@@ -117,7 +122,7 @@
         </div>
 
         <div class="r4">
-            <div class="export">{data}</div>
+            <div id="export">{data}</div>
 
             <!-- <textarea disabled>
                 {data}
@@ -207,10 +212,10 @@
                 justify-content: center;
                 align-items    : center;
 
-                .export {
+                #export {
                     width : 700px;
                     height: 100px;
-
+    
                     overflow-y: hidden;
                     overflow-x: hidden;
                     display: none;

@@ -1,27 +1,24 @@
 // ------------------------------------------------------------
 // : Import
 // ------------------------------------------------------------
-
 // Browser (polyfill)
 import browser from 'webextension-polyfill'
-import Bowser  from 'bowser'
 
 // General
-import axios   from 'axios'
-import { DateTime }      from 'luxon'
-import { createMachine } from '@xstate/fsm'
-import { interpret }     from '@xstate/fsm'
-import _ from 'lodash'
+import EventEmitter                   from 'eventemitter3'
+import { DateTime }                   from 'luxon'
+import { createMachine, createActor } from 'xstate'
 
 // Modules
-import { Logger }         from '@/background/utils/logger'
-import { window_manager } from '@/background/utils/window'
-import { crawler }        from '@/background/crawler/crawler'
-import { ipc }            from '@/background/modules/ipc'
+import { Logger }  from '@/background/utils/logger'
+import { api }     from '@/background/core/api'
+import { ws }      from '@/background/core/ws'
+import { ipc }     from '@/background/core/ipc'
+import { crawler } from '@/background/core/crawler'
 
 // Utils
-import { storage }        from '@/background/utils/storage'
-import { generate_token } from '@/background/utils/utils'
+import { store }          from '@/background/core/storage'
+import { not_empty }      from '@/background/utils/utils'
 import { wait_until }     from '@/background/utils/utils'
 // ------------------------------------------------------------
 // : Types
@@ -31,15 +28,7 @@ declare global {
         env: Record<string, string>
     }
 }
-
-declare var self: any
-// ------------------------------------------------------------
-// : Utils
-// ------------------------------------------------------------
-const is_empty  = _.isEmpty
-const not_empty = _.negate(is_empty)
-
-const pick = _.pick
+declare var self  : any
 // ------------------------------------------------------------
 // : Locals
 // ------------------------------------------------------------
@@ -47,330 +36,189 @@ const logger = new Logger('Background')
 // ------------------------------------------------------------
 // : Background
 // ------------------------------------------------------------
-class Background {
-    private state  : ReturnType<typeof createMachine>
-    private service: any
+class Background extends EventEmitter {
+    private state: ReturnType<typeof createMachine>
+    private actor: ReturnType<typeof createActor>
 
     /**
      * Initial point of the script.
      */
     public async init() {
+
         this.state = createMachine({
+            /** @xstate-layout N4IgpgJg5mDOIC5QCMCGBjA1lATgewFcA7CAOljABcCAHAYgIpwFoAzASx1koG0AGALqJQNPLHaV2eIsJAAPRACYAjH1IBOAGwAOAOwBmdeoCsmvsb67dAGhABPRKoAspJ0fXbty47qfbNipoAvkG2aFi4hCTkVLQMTMzEOGBQ7NxgyRD8QkggouKS0rIKCCpqWnqGJmYWVrYOpU66pIpuHup8iuaWyoohYRjY+MRkFNT0jBnMyanpmdmy+RJSMrklZRo6Bkam3XX2SurNuhZ83rqayk4B1-0g4UNRZJMsHFyUdERgcryCi2LLIprRCmFzGfTKZTucHaYzGRT1Rx8FxtDxeHx+AL6O4PSIjUgvRJEGZpSgZSCfb6-HIiAGFVagEraJzGUhXcwGPj+ZkGREISHqUjGbT6fROcX6cytUw4wZ46KEklzClfH4LXJLenFRyqZp+Jz6RQqE66bR85Ri0iaa2aU3mbwQvwhUIgIh4CBwWS44Ykf4FFbahDMTR84OkPgRyNRqO6WURH2jWI0P2AhnyRBOBEHfmdUh6U6qLQssXqOOPfGEt7cFNa4EIJzmIU3YzuO3ivleIXR61uA18YIu71PAkJJIpUnkiA1gN1zQtoXXLzWo4Wzx8rRCkWizOwkwR7GDuUJkdTJVkzLToGMxDqBts0zKbQeSUWvjqc2Qq0220dTTVI5lvKZDJKgEANLS-pXum-JdIorjuPoT5Qv2+g2NmkLKF+Nq6L+-6xs6QA */
             id     : 'background',
-            initial: 'debug',
+            initial: 'init',
 
             states: {
-                'debug': {
-                    entry: () => { this.on_debug() },
-                    on   : {'next': {target: 'init'}}
-                },
-
                 'init': {
-                    entry: () => { this.on_init() },
-                    on   : {'next': {target: 'startup'}}
+                    entry: (ctx) => { this.emit('init', ctx) },
+                    on   : {
+                        'next': { target: 'setup' }
+                    }
                 },
 
-                'startup': {
-                    entry: () => { this.on_startup() },
-                    on   : {'verify': { target: 'verifying' }},
+                'setup': {
+                    entry: (ctx) => { this.emit('setup', ctx) },
+                    on   : {
+                        'user-0': { target: 'user-0' },
+                        'user-1': { target: 'user-1' },
+                        'user-2': { target: 'user-2' },
+                    }
                 },
 
-                'verifying': {
-                    entry: () => { this.on_verifying() },
-                    on: {
-                        'not_registered': {target: 'registering'},
-                        'registered'    : {target: 'ready'      },
-                    },
+                'user-0': { // Newcomer
+                    entry: (ctx) => { this.emit('user-0', ctx) },
+                    on   : { 'next': { target: 'user-1'} }
                 },
-                
-                'registering': {
-                    entry: () => { this.on_registering() },
-                    on   : {'ready' : {target: 'verifying'}},
+                'user-1': { // Unregistered user
+                    entry: (ctx) => { this.emit('user-unregistered', ctx) },
+                    on   : { 'next': { target: 'user-2'} }
+                },
+                'user-2': { // Registered user
+                    entry: (ctx) => { this.emit('user-2', ctx) },
+                    on   : { 'next': { target: 'ready'} }
                 },
 
                 'ready': {
-                    entry: () => { this.on_ready() }
+                    entry: (ctx) => { this.emit('ready', ctx) }
                 },
-          },
+            },
         })
 
-        this.service = interpret(this.state).start()
-        this.service.subscribe((state) => {
-            
-        })
-    }
+        this.on('init', async() => {
+            await store.set('background.state', 'init')
+            const is_development = import.meta.env.MODE === 'development'
 
-    private async on_debug() {
-        const is_development = import.meta.env.MODE === 'development'
-        await storage.set({'environment': is_development ? 'dev' : 'prod'})
+            // Initialize storage
+            await store.init()
 
-        /// Define debugging functions
-        {
-            self.restart = async function() {
+            // Log the start of the extension
+            const now = DateTime.local()
+            logger.info(`Started at ${now.toFormat('yyyy-MM-dd HH:mm:ss')}`)
+            logger.info(`Version: ${await store.get('extension.version')}`)
+            logger.info(`Browser: ${await store.get('browser.name')} ${await store.get('browser.version')}`)
+            logger.info(`Token  : ${await store.get('user.token')}`)
+            logger.info(`API    : ${import.meta.env.BASE_URL}`)
+            logger.info(`WS     : ${import.meta.env.BASE_WS}`)
+
+            self.reload = async function () {
                 browser.runtime.reload()
             }
-    
-            self.register = async function() {
-                browser.tabs.create({
-                    url: 'http://dev.bmslab.utwente.nl/dse/consent'
-                })
+
+            self.reset = async function () {
+                await api.send('reset', {})
             }
 
-            self.form = async function() {
-                console.log(await storage.get('user.form'))
+            self.register = async function () {
+                browser.runtime.getURL('/index.html')
             }
 
-            self.token = async function() {
-                console.log(await storage.get('user.token'))
+            self.state = async function () {
+                console.log(await store.get())
             }
 
-            self.storage = async function() {
-                console.log(await storage.get_all())
+            if (is_development) {
+                logger.info('Development mode enabled')
+
+                // await browser.windows.create({
+                //     // url : 'https://static.33.56.161.5.clients.your-server.de/dse/consent',
+                //     url : 'http://localhost:3000/consent',
+                //     type: 'popup',
+                // })
+
+                self.register = async function () {
+                    await browser.windows.create({
+                        url : 'https://static.33.56.161.5.clients.your-server.de/dse/consent',
+                        type: 'popup',
+                    })
+                }
+
+                self.update = async function () {
+                    api.emit('update')
+                }
+
+                //// Load popups
+                // setTimeout(() => {
+                //     browser.tabs.create({
+                //         url: 'http://google.com'
+                //     })
+                // }, 1000)
+
+                //// Opens the pop up in a new tab (for fast debugging)
+                // const url = browser.runtime.getURL('/popup.html')
+                // const tab = await browser.tabs.create({url: url})
+
+                //// Reload extension periodically
+                // setInterval(() => {
+                //     browser.runtime.reload()
+                // }, 2500)
             }
 
-            self.start = async function() {
-                const token = await storage.get('user.token')
-
-                await axios({
-                    method : 'get',
-                    baseURL: import.meta.env.BASE_URL,
-                    url    : `/api/users/${token}/start`,
-                    params : {token: 'dse2023'}
-                }).catch((e) => {
-                    logger.error(e)
-                })
-            }
-
-            self.stop = async function() {
-                const token = await storage.get('user.token')
-
-                await axios({
-                    method : 'get',
-                    baseURL: import.meta.env.BASE_URL,
-                    url    : `/api/users/${token}/stop`,
-                    params : {token: 'dse2023'}
-                }).catch((e) => {
-                    logger.error(e)
-                })
-            }
-        }
-
-        if (is_development) {
-            logger.log('Development mode enabled')
-
-            self.register = async function() {
-                browser.tabs.create({
-                    url: 'http://localhost:3000/consent'
-                })
-            }
-
-            //// Clear token (new user)
-            // await storage.clear()
-
-            //// Clear form (old versions)  
-            // await storage.remove('user.token')
-            // await storage.remove('user.form')
-            // await storage.set({'user.form': {}})
-
-            //// Registered user (Home server)
-            // await storage.set({'user.token': '87edb4dbf4da'})
-
-            //// Registered user (Fake token)
-            // await storage.set({'user.token': '12345'})
-
-            //// Registered user (BMS server)
-            // await storage.set({'user.token': 'e20eba0f02fa023a3bbe2eb8ec9bb9a06436c3398d2006f4a9817967607af7a5'})
-
-            //// Load popups
-            // setTimeout(() => {
-            //     browser.tabs.create({
-            //         url: 'http://google.com'
-            //     })
-            // }, 1000)
-
-            //// Opens the pop up in a new tab (for fast debugging)
-            // const url = browser.runtime.getURL('/popup.html')
-            // const tab = await browser.tabs.create({url: url})
-
-            //// Reload extension periodically
-            // setInterval(() => {
-            //     browser.runtime.reload()
-            // }, 2500)
-        }
-
-        // Wait until the service is ready
-        await wait_until(() => this.service)
-
-        // Go to the next state
-        this.service.send('next')
-    }
-
-    //// State Handlers
-    private async on_init() {
-        // Generate token first thing
-        let has_token = !!await storage.get('user.token')
-
-        if (!has_token) { 
-            await storage.set({'user.token': generate_token()})
-        }
-
-        // Initialize modules
-        await ipc    .init()
-        await crawler.init()
-
-
-
-        // Listen for changes in storage
-        let last_update = DateTime.local()
-        storage.onChanged.addListener(async () => {
-            if (last_update.plus({seconds: 5}) > DateTime.local()) {
-                return
-            }
-
-            ipc.publish('bms.dse.v1.5.client.update', JSON.stringify({
-                token   : await storage.get('user.token'),
-                form    : await storage.get('user.form'),
-                storage : await storage.get_all(),
-                manifest: browser.runtime.getManifest(),
-            }))
+            this.actor.send({ type: 'next' })
         })
 
-        this.service.send('next')
-    }
+        this.on('setup', async() => {
+            await store.set('background.state', 'setup')
 
-    private async on_startup() {
-        // Register IPC handlers
-        ipc.register()
-
-        // Filter out unnecessary data (due to previous extension versions)
-        {
-            const data = await storage.get_all()
-            const filtered = pick(data, [
-                'browser',
-                
-                'connected',
-                'language',
-
-                'user.form',
-                'user.registered',
-                'user.registered_timestamp',
-                'user.token',
-
-                'window_manager.tabs',
-                'window_manager.windows',
-
-                'extension.popup_timestamp',
-                'extension.state',
-                'extension.version',
-                'extension.installation_time',
-            ])
-            
-            await storage.set(filtered)
-        }
-
-        // Remove config from storage (latest version)
-        try       { await storage.remove('config') }
-        catch (e) {  }
-
-        await storage.set({'extension.version': browser.runtime.getManifest().version}) // Set the extension version
-
-        // Get and set the default language (based on the system language)
-        const language = navigator.language
-        await storage.set({'language': language})
-
-        // Set the browser properties
-        const browser_properties = Bowser.getParser(navigator.userAgent)
-        await storage.set({'browser': {
-            name       : browser_properties.getBrowserName(),
-            version    : browser_properties.getBrowserVersion(),
-            os         : browser_properties.getOSName(),
-            os_version : browser_properties.getOSVersion(),
-        }})
-
-        // Log the start of the extension
-        const now   = DateTime.local()
-        logger.log(`Started at ${now.toFormat('yyyy-MM-dd HH:mm:ss')}`)
-        logger.log(`Version: ${browser.runtime.getManifest().version}`)
-        logger.log(`Browser: ${browser_properties.getBrowserName()} ${browser_properties.getBrowserVersion()}`)
-        logger.log(`Token  : ${await storage.get('user.token')}`)
-        logger.log(`IPC    : ${import.meta.env.NATS_URL} (${import.meta.env.NATS_USER})`)
-
-
-        // Set handler for idle state changes
-        browser.idle.onStateChanged.addListener(async(state) => {
-            logger.log(`Idle state: ${state}`)
-            await storage.set({'extension.state': state})
-        })
-
-        // Set idle detection 
-        browser.idle.queryState(60).then(async (state) => {
-            logger.log(`Idle state: ${state}`)
-            await storage.set({'extension.state': state})
-        })
-
-        this.service.send('verify')
-    }
-
-    private async on_verifying() {
-        try {
-            const token = await storage.get('user.token')
-            const form  = await storage.get('user.form')
-
-            const has_token = not_empty(token)
-            const has_form  = not_empty(form)
+            // Initialize modules
+            crawler.init()
+            ws     .init()
+            ipc    .init()
+            api    .init()
 
             switch (true) {
-                case has_token && has_form: {
-                    ipc.publish('bms.dse.user.register', JSON.stringify({
-                        token: token,
-                        form : form,
-                    }))
-
-                    // Jumps to on_ready
-                    this.service.send('registered') 
-                    break
-                }
-
-                default: {
-                    // Jumps to on_registering
-                    this.service.send('not_registered') 
-                    break
-                }
+                case await store.has('user.form') : this.actor.send({ type: 'user-2' }); break
+                case await store.has('user.popup'): this.actor.send({ type: 'user-1' }); break
+                default                           : this.actor.send({ type: 'user-0' }); break
             }
-        } catch (e) {
-            logger.error(e)
-            
-            // Jumps to on_registering
-            this.service.send('not_registered') 
-        }
-    }
+        })
 
-    private async on_registering() {    
-        try {
-            await wait_until(() => ipc.connected) // Wait until connected to the server
+        // Newcomer
+        this.on('user-0', async() => {
+            await store.set('background.state', 'user-0')
 
-            // Skip if there is registered_timestamp
-            if (await storage.get('user.registered_timestamp')) {
-                this.service.send('ready')
-                return
-            }
+            await browser.windows.create({
+                url : 'https://static.33.56.161.5.clients.your-server.de/dse/consent',
+                type: 'popup',
+            })
 
-            // Open the registration popup
-            window_manager.open_popup({minimized: false})
+            await store.set('user.popup', true)
+            await store.set('user.type' , 'newcomer')
+            this.actor.send({ type: 'next' })
+        })
 
-            // Set current time in storage
-            const now = DateTime.now()
-            await storage.set({'user.registered_timestamp': now.toISO()})
-            
-            await wait_until(() => storage.get('user.form')) // Wait until the user registers
-            this.service.send('ready')                       // Jumps to on_ready
-        } catch (e) {
-            logger.error(e)
-        }
-    }
+        // Unregistered user
+        this.on('user-1', async() => {
+            await store.set('background.state', 'user-1')
 
-    private async on_ready() {
-        logger.log('Ready')
+            await wait_until(async() => await store.get('user.form'))
+            await store.set('user.popup', true)
+            await store.set('user.type' , 'unregistered')
+            this.actor.send({ type: 'next' })
+        })
+
+        // Registered user
+        this.on('user-2', async() => {
+            await store.set('background.state', 'user-2')
+
+            await store.set('user.popup', true)
+            await store.set('user.type' , 'registered')
+            this.actor.send({ type: 'next' })
+        })
+
+        this.on('ready', async() => {
+            logger.info('Ready')
+            await store.set('background.state', 'ready')
+        })
+
+        this.actor = createActor(this.state)
+        this.actor.start()
+
+        setTimeout(() => {
+            // TODO: Put this back
+            browser.runtime.reload()
+        }, 3600_000)
     }
 }
 // ------------------------------------------------------------

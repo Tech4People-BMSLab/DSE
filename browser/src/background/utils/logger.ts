@@ -20,7 +20,7 @@ export class Logger {
         return `${DateTime.local().toFormat('[yyyy-LL-dd HH:mm:ss]')} ${this.name}:`
     }
 
-    public log(...args) {
+    public info(...args) {
         console.log(this.get_prefix(), ...args)
     }
 

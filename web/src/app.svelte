@@ -5,16 +5,19 @@
     import { onMount }                 from 'svelte'
     import { Router, Route, navigate } from 'svelte-routing'
 
-    import PageConsent     from '@/pages/consent/consent.svelte'
-    import PageForm        from '@/pages/form/form.svelte'
-    import PageComplete    from '@/pages/complete/complete.svelte'
+    import PageConsent  from '@/pages/consent/consent.svelte'
+    import PageForm     from '@/pages/form/form.svelte'
+    import PageComplete from '@/pages/complete/complete.svelte'
 
     import { is_debug } from '@/utils/utils'
     // ------------------------------------------------------------
-    // : Init
+    // : Helpers
     // ------------------------------------------------------------
     const base_path = import.meta.env.BASE_URL || ''
 
+    // ------------------------------------------------------------
+    // : Init
+    // ------------------------------------------------------------
     onMount(() => {
         let url = new URL(window.location.href)
 
@@ -30,11 +33,11 @@
     })
 </script>
 
-
 <main class="page-index">
     <div class="left"></div>
     <div class="content">
         <Router>
+            <Route path={`${base_path}/`}         component={PageConsent} />
             <Route path={`${base_path}/consent`}  component={PageConsent} />
             <Route path={`${base_path}/form`}     component={PageForm} />
             <Route path={`${base_path}/complete`} component={PageComplete} />
@@ -42,7 +45,6 @@
     </div>
     <div class="right"></div>
 </main>
-
 
 <style lang="scss" scoped>
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
@@ -68,5 +70,4 @@
         grid-area: c;
     }
 }   
-
 </style>

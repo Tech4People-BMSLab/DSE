@@ -1,0 +1,12 @@
+{
+    "keywords": [
+		"Migrantenstroom",
+		"Asielcrisis",
+		"Vluchtenlingenproblematiek"
+    ],
+	"websites": [
+		{"name": "Google"       , "query": "q"           ,"url": "https://www.google.com/search"},
+		{"name": "DuckDuckGo"   , "query": "q"           ,"url": "https://duckduckgo.com/"},
+		{"name": "Bing"         , "query": "q"           ,"url": "https://www.bing.com/search"}
+	]
+}

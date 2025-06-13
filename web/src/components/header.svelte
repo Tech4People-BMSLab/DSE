@@ -1,14 +1,15 @@
 <script lang="ts">
-
+    import dp_logo from '../../public/images/logo/dp_logo.png?inline'
+    import ut_logo from '../../public/images/logo/ut_logo.png?inline'
 </script>
 
 <header class="header">
     <div class="left">
-        <img src='./images/logo/dp_logo.png' alt='DP logo'>
+        <img src={dp_logo} alt="DP Logo"/>
     </div>
 
     <div class="right">
-        <img src='./images/logo/ut_logo.png' alt='UT logo'>
+        <img src={ut_logo} alt="UT Logo"/>
     </div>
 </header>
 

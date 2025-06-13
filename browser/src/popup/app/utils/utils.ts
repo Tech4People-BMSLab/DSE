@@ -56,6 +56,7 @@ export const is_array     = (obj: any) => Array.isArray(obj)
 export const is_string    = (obj: any) => typeof obj === 'string'
 export const is_number    = (obj: any) => typeof obj === 'number'
 export const is_boolean   = (obj: any) => typeof obj === 'boolean'
+export const not_empty    = (obj: any) => !is_empty(obj)
 
 export const contains = (arr, value) => arr.includes(value)
 

@@ -5,7 +5,7 @@ import { svelte }       from '@sveltejs/vite-plugin-svelte'
 export default defineConfig(async({command, mode}) => {
     const is_production  = mode === 'production'
     const is_development = mode === 'development'
-    const base           = is_production ? '/dse' : '/'
+    const base           = is_production ? '/dse' : ''
 
     switch (true) {
         case is_production: {
@@ -33,7 +33,10 @@ export default defineConfig(async({command, mode}) => {
         case is_development: {
             return {
                 plugins: [svelte()],
-                define : {},
+                define: {
+                    'import.meta.env.MODE'     : JSON.stringify('development'),
+                    'import.meta.env.BASE_URL' : JSON.stringify(base),
+                },
                 base   : base,
                 resolve: {
                     alias: {

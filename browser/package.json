@@ -1,16 +1,14 @@
 {
   "name": "digitale-polarisatie",
-  "version": "1.0.5",
+  "version": "3.0.6",
   "description": "Digitale Polarisatie",
   "author": "BMSLab <bmslab@utwente.nl> (bmslab@utwente.nl)",
   "type": "module",
   "sideEffects": false,
   "scripts": {
-    "dev": "bun run gulp dev-local",
-    "build": "bun run gulp build",
     "depcheck": "npx depcheck --ignore-dirs=dist,public",
     "typesync": "npx typesync",
-    "preview": "vite --host localhost --port 3000"
+    "preview": "vite --host --port 3000"
   },
   "keywords": [
     "chrome extension",
@@ -23,7 +21,6 @@
   "devDependencies": {
     "@babel/core": "7.14.2",
     "@types/async": "3.2.15",
-    "@types/babel__core": "7.20.5",
     "@types/chrome": "0.0.139",
     "@types/gulp": "^4.0.17",
     "@types/gulp-babel": "^6.1.33",
@@ -35,11 +32,10 @@
     "@types/luxon": "3.0.0",
     "@types/node": "14.14.45",
     "@types/webextension-polyfill": "0.9.0",
-    "dockerode": "^4.0.2",
-    "esbuild-svelte": "^0.8.0",
+    "esbuild-svelte": "^0.9.0",
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
-    "gulp-esbuild": "^0.12.0",
+    "gulp-esbuild": "^0.12.1",
     "gulp-if": "^3.0.0",
     "gulp-if-else": "^1.0.3",
     "gulp-livereload": "^4.0.2",
@@ -48,27 +44,34 @@
     "gulp-terser": "^2.1.0",
     "gulp-zip": "^6.0.0",
     "merge-stream": "^2.0.0",
-    "nats": "^2.19.0",
-    "svelte": "3.31.2",
+    "sass-embedded": "^1.80.6",
+    "svelte": "^5.1.13",
     "svelte-preprocess": "4.3.0",
     "typescript": "4.2.4",
+    "vite": "^5.4.10",
     "webextension-polyfill": "0.9.0",
-    "ws": "^8.16.0"
+    "ws": "^8.18.0"
   },
   "dependencies": {
-    "@types/axios": "^0.14.0",
-    "@xstate/fsm": "2.0.0",
+    "@sveltejs/vite-plugin-svelte": "^4.0.0",
+    "@types/axios": "^0.14.4",
+    "@types/pako": "^2.0.3",
+    "@types/semver": "^7.5.8",
     "async-mutex": "^0.5.0",
     "axios": "^1.7.7",
     "bowser": "2.11.0",
     "crypto-random-string": "^5.0.0",
+    "depcheck": "^1.4.7",
     "eventemitter3": "^5.0.1",
-    "joi": "^17.11.0",
+    "fflate": "^0.8.2",
+    "joi": "^17.13.3",
+    "localforage": "^1.10.0",
     "lodash": "4.17.21",
     "luxon": "3.0.1",
-    "msgpackr": "^1.11.0",
-    "nats.ws": "^1.19.1",
-    "sass": "^1.62.0"
+    "msgpackr": "^1.11.2",
+    "semver": "^7.6.3",
+    "web-ext": "^8.3.0",
+    "xstate": "^5.18.2"
   },
   "browser": {
     "crypto": false
